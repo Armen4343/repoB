@@ -1,0 +1,25 @@
+name: Random Exit Code with Sleep (Triggered from another Repo)
+
+on:
+  repository_dispatch:
+    types: [trigger-exit]
+  workflow_dispatch:
+
+jobs:
+  random-failure-job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Sleep for 30 seconds
+      run: sleep 30
+
+    - name: Randomly drop exit code
+      run: |
+        # Generate a random number (0 or 1)
+        RANDOM_EXIT_CODE=$((RANDOM % 2))
+
+        echo "Generated exit code: $RANDOM_EXIT_CODE"
+        exit $RANDOM_EXIT_CODE
