@@ -19,7 +19,7 @@ jobs:
     - name: Randomly drop exit code
       run: |
         # Generate a random number (0 or 1)
-        RANDOM_EXIT_CODE=$((RANDOM % 2))
+        RANDOM_EXIT_CODE=0
 
         echo "Generated exit code: $RANDOM_EXIT_CODE"
-        exit $RANDOM_EXIT_CODE
+        exit 0
