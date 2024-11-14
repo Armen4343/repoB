@@ -3,7 +3,7 @@ name: Random Exit Code with Sleep (Triggered from another Repo)
 on:
   repository_dispatch:
     types: [trigger-exit]
-  #workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   random-failure-job:
