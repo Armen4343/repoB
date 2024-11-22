@@ -17,6 +17,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Display caller information
+      run: |
+        echo "This workflow was triggered by another workflow."
+        echo "Caller workflow name: ${{ github.event.workflow }}"
+        echo "Caller repository: ${{ github.event.repository.full_name }}"
+        echo "Caller ref: ${{ github.event.ref }}"
     - name: Checkout code
       uses: actions/checkout@v3
 
