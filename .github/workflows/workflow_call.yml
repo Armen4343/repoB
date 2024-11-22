@@ -1,0 +1,12 @@
+name: "build: mvn build and put image in GCR"
+# Controls when the workflow will run
+on:
+  workflow_call:
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: echo "test"
