@@ -17,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Print event type
+      run: |
+        echo "The event type is: ${{ github.event.action }}"
     - name: Display caller information
       run: |
         echo "This workflow was triggered by another workflow."
