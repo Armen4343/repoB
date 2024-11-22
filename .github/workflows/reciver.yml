@@ -1,7 +1,8 @@
 name: Called Workflow
 
 on:
-  workflow_call:
+  repository_dispatch:
+    types: [tests]
 
 jobs:
   info:
