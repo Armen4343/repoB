@@ -1,16 +1,16 @@
-name: Called Workflow
+# name: Called Workflow
 
-on:
-  repository_dispatch:
-    types: [tests]
+# on:
+#   repository_dispatch:
+#     types: [tests]
 
-jobs:
-  info:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Display caller information
-        run: |
-          echo "This workflow was triggered by another workflow."
-          echo "Caller workflow name: ${{ github.event.workflow }}"
-          echo "Caller repository: ${{ github.event.repository.full_name }}"
-          echo "Caller ref: ${{ github.event.ref }}"
+# jobs:
+#   info:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Display caller information
+#         run: |
+#           echo "This workflow was triggered by another workflow."
+#           echo "Caller workflow name: ${{ github.event.workflow }}"
+#           echo "Caller repository: ${{ github.event.repository.full_name }}"
+#           echo "Caller ref: ${{ github.event.ref }}"

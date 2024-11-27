@@ -1,9 +1,9 @@
-name: "Trigger and Wait"
+# name: "Trigger and Wait"
 
-on:
-  push:
+# on:
+#   push:
 
 
-jobs:
-  trigger-repository-dispatch:
-    uses: Armen4343/repoB/.github/workflows/reciver.yml@main
+# jobs:
+#   trigger-repository-dispatch:
+#     uses: Armen4343/repoB/.github/workflows/reciver.yml@main
