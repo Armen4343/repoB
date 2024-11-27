@@ -6,8 +6,7 @@ on:
     types:
       - completed
   workflow_dispatch:
-  
-  inputs:
+    inputs:
     mock_run:
       description: 'indicates the the run is mock or not'
       required: false
