@@ -7,11 +7,11 @@ on:
       - completed
   workflow_dispatch:
     inputs:
-    mock_run:
-      description: 'indicates the the run is mock or not'
-      required: false
-      default: false
-      type: bool
+      mock_run:
+        description: 'indicates the the run is mock or not'
+        required: false
+        default: true
+        type: bool
 
 jobs:
   wait-for-deployment:
