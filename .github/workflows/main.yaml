@@ -6,19 +6,27 @@ on:
     types:
       - completed
   workflow_dispatch:
+  
+  inputs:
+    mock_run:
+      description: 'indicates the the run is mock or not'
+      required: false
+      type: bool
 
 jobs:
   wait-for-deployment:
-    if: github.event_name == 'workflow_run'
     runs-on: ubuntu-latest
     steps:
       - name: Wait for dev deployment to complete
         run: |
-          echo "Set sleep for 10 sec"
-          sleep 10
+          if [ ${{ inputs.mock_run }} ]; then
+            echo "this is mock run"
+          else
+            echo "Set sleep for 10 sec"
+            sleep 10
+          fi
 
   run-automation-tests:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
     needs: wait-for-deployment
     runs-on: ubuntu-latest
     steps:
