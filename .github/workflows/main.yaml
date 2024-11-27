@@ -1,0 +1,28 @@
+name: Dev environment tests
+
+on:
+  workflow_run:
+    workflows: ["test listener"]
+    branches: [develop]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  wait-for-deployment:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for dev deployment to complete
+        run: |
+          echo "Set sleep for 10 sec"
+          sleep 10
+
+  run-automation-tests:
+    # if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
+    needs: wait-for-deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: test
+        run: |
+          echo "dooone"
