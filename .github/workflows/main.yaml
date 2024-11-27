@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
     inputs:
       mock_run:
-        description: 'indicates the the run is mock or not'
+        description: 'Indicates that the run is mock or not'
         required: false
         default: true
-        type: bool
+        type: 'boolean'
 
 jobs:
   wait-for-deployment:
