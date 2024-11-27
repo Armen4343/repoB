@@ -3,10 +3,9 @@ name: Dev environment tests
 on:
   workflow_run:
     workflows: ["test listener"]
-    branches: [develop]
     types:
       - completed
-  # workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   wait-for-deployment:
