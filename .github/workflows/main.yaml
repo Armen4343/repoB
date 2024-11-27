@@ -18,7 +18,7 @@ jobs:
           sleep 10
 
   run-automation-tests:
-    # if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run'
     needs: wait-for-deployment
     runs-on: ubuntu-latest
     steps:
