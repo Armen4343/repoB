@@ -13,13 +13,11 @@ jobs:
   wait-for-deployment:
     runs-on: one-thd-gcp
     if: ${{ inputs.mock_run == 'false' }}
-    steps:
-      - name: Spinnaker Deployment Pipeline Monitoring
-        uses: one-thd/ECC_workflows/.github/workflows/v2_spinnaker-pipeline-monitoring.yaml@main
-        with:
-          application_name: "communicationconfigservices"       
-          pipeline_name: "Dev-Deploy-Central"
-          pipeline_stage_name: "Deploy Central"
+    uses: one-thd/ECC_workflows/.github/workflows/v2_spinnaker-pipeline-monitoring.yaml@main
+      with:
+        application_name: "communicationconfigservices"       
+        pipeline_name: "Dev-Deploy-Central"
+        pipeline_stage_name: "Deploy Central"
 
   run-automation-tests:
     if: ${{ needs.wait-for-deployment.result == 'skipped' || needs.wait-for-deployment.result == 'success' }}
