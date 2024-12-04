@@ -1,0 +1,31 @@
+name: test test
+
+on:
+  workflow_dispatch:
+    inputs:
+      mock_run:
+        description: 'Indicates the mock run'
+        required: false
+        default: true
+        type: 'boolean'
+
+jobs:
+  wait-for-deployment:
+    runs-on: one-thd-gcp
+    if: ${{ inputs.mock_run == 'false' }}
+    steps:
+      - name: Spinnaker Deployment Pipeline Monitoring
+        uses: one-thd/ECC_workflows/.github/workflows/v2_spinnaker-pipeline-monitoring.yaml@main
+        with:
+          application_name: "communicationconfigservices"       
+          pipeline_name: "Dev-Deploy-Central"
+          pipeline_stage_name: "Deploy Central"
+
+  run-automation-tests:
+    if: ${{ needs.wait-for-deployment.result == 'skipped' || needs.wait-for-deployment.result == 'success' }}
+    uses: one-thd/ECC_workflows/.github/workflows/v2_trigger_repo-dispatch_and_wait.yaml@main
+    secrets: inherit
+    with:
+      repository: "ecc_e2e_automation"
+      event_type: "dev"
+      sleep_time: "20" # Status check interval (in seconds)
