@@ -11,13 +11,14 @@ on:
 
 jobs:
   wait-for-deployment:
-    runs-on: one-thd-gcp
+    runs-on: ubuntu-latest
     if: ${{ inputs.mock_run == 'false' }}
     steps:
       - name: first
         run: echo "first"
 
   run-automation-tests:
+    runs-on: ubuntu-latest
     if: ${{ needs.wait-for-deployment.result == 'skipped' || needs.wait-for-deployment.result == 'success' }}
     steps:
       - name: second
