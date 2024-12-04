@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Do something after first workflow is successful
         run: |
-          if [[ ${{ inputs.mock_run}} ]]; then
+          if [[ "${{ inputs.mock_run }}" == "true" ]]; then
             echo "true"
           else
             echo "false"
