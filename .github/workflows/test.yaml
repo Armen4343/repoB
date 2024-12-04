@@ -11,16 +11,16 @@ on:
 
 jobs:
   wait-for-deployment:
+    if: ${{ inputs.mock_run == 'false' }} # Run only if not a mock run
     runs-on: ubuntu-latest
-    if: ${{ inputs.mock_run == 'false' }}
     steps:
       - name: first
         run: echo "first"
 
   run-automation-tests:
+    needs: wait-for-deployment
+    if: ${{ needs.wait-for-deployment.result == 'success' || needs.wait-for-deployment.result == 'skipped' }} # Only run if first succeeds or is skipped
     runs-on: ubuntu-latest
-    needs: [ wait-for-deployment ]
-    if: ${{ needs.wait-for-deployment.result == 'skipped' || needs.wait-for-deployment.result == 'success' }}
     steps:
       - name: second
         run: echo "second"
