@@ -19,6 +19,7 @@ jobs:
 
   run-automation-tests:
     runs-on: ubuntu-latest
+    needs: [ wait-for-deployment ]
     if: ${{ needs.wait-for-deployment.result == 'skipped' || needs.wait-for-deployment.result == 'success' }}
     steps:
       - name: second
