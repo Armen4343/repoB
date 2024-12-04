@@ -1,0 +1,21 @@
+name: Second Workflow
+
+on:
+  workflow_run:
+    workflows: ["test test"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      mock_run:
+        description: 'Indicates the mock run'
+        required: false
+        default: true
+        type: 'boolean'
+
+jobs:
+  second-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Do something after first workflow is successful
+        run: echo ${{ inputs.mock_run}}
