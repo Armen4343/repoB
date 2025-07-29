@@ -25,55 +25,32 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           
       - name: Update terragrunt.hcl
+        id: update_file
         run: |
           FILE=$(find live -path "*/${MODULE}/terragrunt.hcl" | head -1)
           if [ -z "$FILE" ]; then
             echo "No terragrunt file found for module $MODULE"
+            echo "CHANGES=false" >> $GITHUB_ENV
             exit 0
           fi
           echo "Updating $FILE to version $VERSION"
           sed -i "s|ref=${MODULE}-v[^\"']*|ref=${MODULE}-${VERSION}|g" "$FILE"
-          
-      - name: Check for changes
-        run: |
-          git status
-          git diff
-          
-      - name: Commit and Push Changes
-        id: commit_push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          BRANCH="bump-${MODULE}-${VERSION}"
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-          git checkout -b "$BRANCH"
-          git add .
-          if git diff --cached --quiet; then
+          git diff --exit-code > /dev/null
+          if [ $? -eq 0 ]; then
             echo "No changes to commit"
             echo "CHANGES=false" >> $GITHUB_ENV
           else
-            git commit -m "chore: bump ${MODULE} to ${MODULE}-${VERSION}"
-            git push origin "$BRANCH"
             echo "CHANGES=true" >> $GITHUB_ENV
           fi
           
-      - name: Install GitHub CLI
+      - name: Create Pull Request
         if: env.CHANGES == 'true'
-        run: |
-          type -p curl >/dev/null || (apt update && apt install curl -y)
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
-          && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
-          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-          && apt update \
-          && apt install gh -y
-
-      - name: Create PR
-        if: env.CHANGES == 'true'
-        run: |
-          gh auth login --with-token <<< "${{ github.token }}"
-          gh pr create --title "Update ${{ env.MODULE }} to ${{ env.MODULE }}-${{ env.VERSION }}" \
-                       --body "This PR updates ${{ env.MODULE }} to tag \`${{ env.MODULE }}-${{ env.VERSION }}\`." \
-                       --base main \
-                       --head "${{ env.BRANCH }}"
-        env:
-          GH_TOKEN: ${{ github.token }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ github.token }}
+          commit-message: "chore: bump ${{ env.MODULE }} to ${{ env.MODULE }}-${{ env.VERSION }}"
+          branch: bump-${{ env.MODULE }}-${{ env.VERSION }}
+          delete-branch: true
+          title: "Update ${{ env.MODULE }} to ${{ env.MODULE }}-${{ env.VERSION }}"
+          body: |
+            This PR updates ${{ env.MODULE }} to tag `${{ env.MODULE }}-${{ env.VERSION }}`.
