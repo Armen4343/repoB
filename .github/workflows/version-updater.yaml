@@ -32,17 +32,22 @@ jobs:
             exit 0
           fi
           echo "Updating $FILE to version $VERSION"
-          sed -i "s|ref=${MODULE}-v[0-9.]*|ref=${MODULE}-${VERSION}|g" $FILE
+          sed -i "s|ref=${MODULE}-v[0-9.]*|ref=${MODULE}-${VERSION}|g" "$FILE"
 
       - name: Commit Changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          MODULE=${MODULE:-$(grep MODULE $GITHUB_ENV | cut -d'=' -f2)}
+          VERSION=${VERSION:-$(grep VERSION $GITHUB_ENV | cut -d'=' -f2)}
           BRANCH="bump-${MODULE}-${VERSION}"
-          git checkout -b $BRANCH
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV   # ✅ persist branch for next step
+
+          git checkout -b "$BRANCH"
           git add .
-          git commit -m "chore: bump ${MODULE} to ${MODULE}-${VERSION}"
-          git push origin $BRANCH
+          git commit -m "chore: bump ${MODULE} to ${MODULE}-${VERSION}" || echo "No changes to commit"
+          git push origin "$BRANCH" || echo "Branch already exists"
 
       - name: Create PR
         uses: peter-evans/create-pull-request@v6
