@@ -52,6 +52,7 @@ jobs:
       - name: Create PR
         uses: peter-evans/create-pull-request@v6
         with:
+          base: main
           branch: ${{ env.BRANCH }}
           title: "Update ${{ env.MODULE }} to ${{ env.MODULE }}-${{ env.VERSION }}"
           body: >
