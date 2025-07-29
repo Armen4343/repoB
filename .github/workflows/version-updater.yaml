@@ -49,6 +49,11 @@ jobs:
 
           git checkout -b "$BRANCH"
           git add .
+          git status
+          echo "statusss"
+          git add -A
+          git status
+          echo "statusss"
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
