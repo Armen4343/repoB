@@ -48,6 +48,5 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           branch: ${{ env.BRANCH }}
-          title: "Update ${MODULE} to ${MODULE}-${VERSION}"
-          body: "This PR updates ${MODULE} to tag \`${MODULE}-${VERSION}\`."
-          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Update ${{ env.MODULE }} to ${{ env.MODULE }}-${{ env.VERSION }}"
+          body: "This PR updates ${{ env.MODULE }} to tag \`${{ env.MODULE }}-${{ env.VERSION }}\`."
