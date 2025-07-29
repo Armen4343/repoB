@@ -1,0 +1,53 @@
+name: Update Module Version in Terragrunt
+
+on:
+  repository_dispatch:
+    types: [module-release]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Extract Info
+        run: |
+          TAG="${{ github.event.client_payload.tag }}"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          MODULE=$(echo "$TAG" | cut -d'-' -f1)
+          VERSION=$(echo "$TAG" | cut -d'-' -f2-)
+          echo "MODULE=$MODULE" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update terragrunt.hcl
+        run: |
+          FILE=$(find live -path "*/${MODULE}/terragrunt.hcl" | head -1)
+          if [ -z "$FILE" ]; then
+            echo "No terragrunt file found for module $MODULE"
+            exit 0
+          fi
+          echo "Updating $FILE to version $VERSION"
+          sed -i "s|ref=${MODULE}-v[0-9.]*|ref=${MODULE}-${VERSION}|g" $FILE
+
+      - name: Commit Changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          BRANCH="bump-${MODULE}-${VERSION}"
+          git checkout -b $BRANCH
+          git add .
+          git commit -m "chore: bump ${MODULE} to ${MODULE}-${VERSION}"
+          git push origin $BRANCH
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: ${{ env.BRANCH }}
+          title: "Update ${MODULE} to ${MODULE}-${VERSION}"
+          body: "This PR updates ${MODULE} to tag \`${MODULE}-${VERSION}\`."
+          token: ${{ secrets.GITHUB_TOKEN }}
