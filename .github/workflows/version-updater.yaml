@@ -2,7 +2,7 @@ name: Update Module Version in Terragrunt
 
 on:
   repository_dispatch:
-    types: [module-release]
+    types: [module-release1]
 
 permissions:
   contents: write
