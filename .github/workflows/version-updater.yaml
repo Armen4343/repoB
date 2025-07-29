@@ -32,7 +32,8 @@ jobs:
             exit 0
           fi
           echo "Updating $FILE to version $VERSION"
-          sed -i "s|ref=${MODULE}-v[0-9.]*|ref=${MODULE}-${VERSION}|g" "$FILE"
+          # sed -i "s|ref=${MODULE}-v[0-9.]*|ref=${MODULE}-${VERSION}|g" "$FILE"
+          sed -i "s|ref=${MODULE}-v[^\"']*|ref=${MODULE}-${VERSION}|g" "$FILE"
 
       - name: Check for changes
         run: |
