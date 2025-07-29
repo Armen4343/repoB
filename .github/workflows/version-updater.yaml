@@ -49,4 +49,5 @@ jobs:
         with:
           branch: ${{ env.BRANCH }}
           title: "Update ${{ env.MODULE }} to ${{ env.MODULE }}-${{ env.VERSION }}"
-          body: "This PR updates ${{ env.MODULE }} to tag \`${{ env.MODULE }}-${{ env.VERSION }}\`."
+          body: >
+            This PR updates ${{ env.MODULE }} to tag `${{ env.MODULE }}-${{ env.VERSION }}`.
