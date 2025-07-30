@@ -1,4 +1,4 @@
-name: Auto-update Terragrunt modules (separate PRs)
+name: Auto-update Terragrunt modules (per-module PRs)
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
 
-      - name: Get list of modules in use
+      - name: Find unique module names
         id: modules
         run: |
           modules=$(grep -rohE 'ref=([a-zA-Z0-9_-]+)-v[0-9.]+' . --include="terragrunt.hcl" \
@@ -26,38 +26,55 @@ jobs:
           echo "$modules" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Loop and create PRs per module
+      - name: Update module versions and create PRs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           while read module_name; do
             echo "🔄 Checking updates for module: $module_name"
 
-            # Get latest tag for this module from source repo
-            latest_tag=$(git ls-remote --tags https://github.com/Armen4343/repoA.git \
+            # Find one sample source line for the module
+            source_line=$(grep -Er "ref=${module_name}-v[0-9.]+" . --include="terragrunt.hcl" | head -n1)
+            if [[ -z "$source_line" ]]; then
+              echo "⚠️ No usage found for $module_name"
+              continue
+            fi
+
+            # Extract the full source URL from the HCL line
+            full_source=$(echo "$source_line" | sed -E 's/.*source *= *"git::([^"]+)".*/\1/')
+            repo_url=$(echo "$full_source" | cut -d'?' -f1 | sed -E 's|(//.*)||')  # removes subdir, keeps base repo
+            repo_url=$(echo "$repo_url" | sed 's|/modules/.*||')                  # in case subfolder is included
+
+            echo "🌐 Repo: $repo_url"
+
+            # Extract the actual Git URL
+            git_url=$(echo "$repo_url" | sed 's|^git::||')
+
+            # Get latest matching tag for this module
+            latest_tag=$(git ls-remote --tags "$git_url" \
               | grep "refs/tags/${module_name}-v" \
               | sed 's|.*refs/tags/||' \
               | sort -V \
               | tail -n1)
 
-            if [ -z "$latest_tag" ]; then
-              echo "❌ No tags found for $module_name"
+            if [[ -z "$latest_tag" ]]; then
+              echo "❌ No tags found for $module_name in $git_url"
               continue
             fi
 
             echo "🆕 Latest tag: $latest_tag"
 
-            # Clone clean branch
-            git checkout -b "update/${module_name}-module"
+            branch="update/${module_name}-module"
+            git checkout -b "$branch"
 
             changed=false
 
-            # Find and update relevant terragrunt.hcl files
             find . -name "terragrunt.hcl" | while read file; do
-              current_line=$(grep -E "ref=${module_name}-v[0-9.]+" "$file" || true)
-              if [[ -n "$current_line" ]]; then
-                current_tag=$(echo "$current_line" | sed -E 's/.*ref=([^"]+)".*/\1/')
-                if [[ "$current_tag" != "$latest_tag" ]]; then
-                  echo "📦 Updating $file from $current_tag to $latest_tag"
-                  sed -i "s|ref=$current_tag|ref=$latest_tag|g" "$file"
+              if grep -q "ref=${module_name}-v" "$file"; then
+                current_ref=$(grep -o "ref=${module_name}-v[0-9.]*" "$file" | head -n1)
+                if [[ "$current_ref" != "ref=$latest_tag" ]]; then
+                  echo "📦 Updating $file"
+                  sed -i "s|$current_ref|ref=$latest_tag|g" "$file"
                   changed=true
                 fi
               fi
@@ -66,19 +83,17 @@ jobs:
             if [[ "$changed" = true ]]; then
               git add .
               git commit -m "chore: bump $module_name module to $latest_tag"
-              git push -f origin "update/${module_name}-module"
+              git push -f origin "$branch"
 
               gh pr create \
                 --title "Update $module_name module to $latest_tag" \
-                --body "This PR bumps the $module_name module to \`$latest_tag\`." \
-                --head "update/${module_name}-module" \
+                --body "This PR updates the $module_name module to \`$latest_tag\`." \
+                --head "$branch" \
                 --base main
             else
               echo "✅ $module_name already at latest version"
               git checkout main
-              git branch -D "update/${module_name}-module"
+              git branch -D "$branch"
             fi
 
           done < modules.txt
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
