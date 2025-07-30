@@ -29,12 +29,16 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Loop and create PRs per module
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          AUTH_GIT_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/Armen4343/repoA.git"
+
           while read module_name; do
             echo "🔄 Checking updates for module: $module_name"
 
-            # Get latest tag for this module from source repo
-            latest_tag=$(git ls-remote --tags https://github.com/Armen4343/repoA.git \
+            # Get latest tag for this module from the module repo
+            latest_tag=$(git ls-remote --tags "$AUTH_GIT_URL" \
               | grep "refs/tags/${module_name}-v" \
               | sed 's|.*refs/tags/||' \
               | sort -V \
@@ -47,8 +51,9 @@ jobs:
 
             echo "🆕 Latest tag: $latest_tag"
 
-            # Clone clean branch
-            git checkout -b "update/${module_name}-module"
+            # Create and switch to update branch
+            branch="update/${module_name}-module"
+            git checkout -b "$branch"
 
             changed=false
 
@@ -68,19 +73,17 @@ jobs:
             if [[ "$changed" = true ]]; then
               git add .
               git commit -m "chore: bump $module_name module to $latest_tag"
-              git push -f origin "update/${module_name}-module"
+              git push -f origin "$branch"
 
               gh pr create \
                 --title "Update $module_name module to $latest_tag" \
                 --body "This PR bumps the $module_name module to \`$latest_tag\`." \
-                --head "update/${module_name}-module" \
+                --head "$branch" \
                 --base main
             else
               echo "✅ $module_name already at latest version"
               git checkout main
-              git branch -D "update/${module_name}-module"
+              git branch -D "$branch"
             fi
 
           done < modules.txt
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
