@@ -39,7 +39,7 @@ jobs:
 
             # Get latest tag for this module from the module repo
             # latest_tag=$(git ls-remote --tags "$AUTH_GIT_URL" \
-            latest_tag=$( git ls-remote --tags https://x-access-token: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@github.com/Armen4343/repoA.git \
+            latest_tag=$( git ls-remote --tags https://x-access-token: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@github.com/Armen4343/repoA.git \
               | grep "refs/tags/${module_name}-v" \
               | sed 's|.*refs/tags/||' \
               | sort -V \
