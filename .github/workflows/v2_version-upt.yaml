@@ -37,7 +37,7 @@ jobs:
             echo "🔄 Checking updates for module: $module_name"
 
             # Get latest tag for this module from the module repo
-            latest_tag=$(git ls-remote --tags "$AUTH_GIT_URL" \
+            latest_tag=$(git ls-remote --tags $AUTH_GIT_URL \
               | grep "refs/tags/${module_name}-v" \
               | sed 's|.*refs/tags/||' \
               | sort -V \
