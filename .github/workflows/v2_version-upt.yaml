@@ -30,7 +30,7 @@ jobs:
 
       - name: Loop and create PRs per module
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           AUTH_GIT_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/Armen4343/repoA.git"
 
