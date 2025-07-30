@@ -32,10 +32,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          AUTH_GIT_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/Armen4343/repoA.git"
-          echo $AUTH_GIT_URL >> test.txt
-          cat test.txt
-
+          AUTH_GIT_URL="https://x-access-token:${GH_TOKEN}@github.com/Armen4343/repoA.git"
+          
           while read module_name; do
             echo "🔄 Checking updates for module: $module_name"
 
