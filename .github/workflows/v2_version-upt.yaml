@@ -71,7 +71,7 @@ jobs:
                 if [[ "$current_tag" != "$latest_tag" ]]; then
                   echo "📦 Updating $file from $current_tag to $latest_tag"
                   sed -i "s|ref=$current_tag|ref=$latest_tag|g" "$file"
-                  git ls-files -m -o --exclude-standard | grep -v '^modules.txt$' | xargs git add
+                  git add $file
                   changed=true  
                 fi
               fi
@@ -83,7 +83,6 @@ jobs:
             echo $changed
 
             if [[ "$changed" = true ]]; then
-              git add .
               git commit -m "chore: bump $module_name module to $latest_tag"
               git push -f origin "$branch"
 
