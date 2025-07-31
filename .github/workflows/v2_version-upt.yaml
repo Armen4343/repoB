@@ -74,6 +74,11 @@ jobs:
                 fi
               fi
             done
+            
+            echo "status>>>>>>>>"
+            git status
+            echo "changed>>>>>>>>"
+            echo $changed
 
             if [[ "$changed" = true ]]; then
               git add .
