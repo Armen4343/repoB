@@ -90,7 +90,7 @@ jobs:
 
               if [[ -n "$existing_pr_number" ]]; then
                 echo "⚠️ Existing PR #$existing_pr_number found for $branch. Closing it..."
-                gh pr close "$existing_pr_number" --delete-branch --yes
+                yes | gh pr close "$existing_pr_number" -d
               fi
               git commit -m "chore: bump $module_name module to $latest_tag"
               git push -f origin "$branch"
