@@ -23,6 +23,7 @@ jobs:
 
           # Avoid host checking issues
           ssh-keyscan github.com >> ~/.ssh/known_hosts
+          echo "modules.txt" >> .gitignore
 
       - name: Get list of modules in use
         id: modules
