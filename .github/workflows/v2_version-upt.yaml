@@ -23,7 +23,6 @@ jobs:
 
           # Avoid host checking issues
           ssh-keyscan github.com >> ~/.ssh/known_hosts
-          echo "modules.txt" >> .gitignore
 
       - name: Get list of modules in use
         id: modules
@@ -72,7 +71,7 @@ jobs:
                 if [[ "$current_tag" != "$latest_tag" ]]; then
                   echo "📦 Updating $file from $current_tag to $latest_tag"
                   sed -i "s|ref=$current_tag|ref=$latest_tag|g" "$file"
-                  git add "$file"
+                  git ls-files -m -o --exclude-standard | grep -v '^modules.txt$' | xargs git add
                   changed=true  
                 fi
               fi
