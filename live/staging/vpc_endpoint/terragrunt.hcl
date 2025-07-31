@@ -1,5 +1,5 @@
 terraform {
-  source = "git::https://github.com/Armen4343/repoA.git//modules/vpc-endpoint?ref=vpc-endpoint-v1.0.0"
+  source = "git::https://github.com/Armen4343/repoA.git//modules/vpc-endpoint?ref=vpc_endpoint-v1.0.0"
 }
 
 inputs = {
