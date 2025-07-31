@@ -62,8 +62,9 @@ jobs:
 
             changed=false
 
-            # Find and update relevant terragrunt.hcl files
-            find . -name "terragrunt.hcl" | while read file; do
+            mapfile -t files < <(find . -name "terragrunt.hcl")
+
+            for file in "${files[@]}"; do
               current_line=$(grep -E "ref=${module_name}-v[0-9.]+" "$file" || true)
               if [[ -n "$current_line" ]]; then
                 current_tag=$(echo "$current_line" | sed -E 's/.*ref=([^"]+)".*/\1/')
@@ -71,7 +72,7 @@ jobs:
                   echo "📦 Updating $file from $current_tag to $latest_tag"
                   sed -i "s|ref=$current_tag|ref=$latest_tag|g" "$file"
                   git add "$file"
-                  changed=true
+                  changed=true  
                 fi
               fi
             done
