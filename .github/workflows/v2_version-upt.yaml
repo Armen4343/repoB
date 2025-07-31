@@ -86,6 +86,12 @@ jobs:
             echo $changed
 
             if [[ "$changed" = true ]]; then
+              existing_pr_number=$(gh pr list --head "$branch" --json number --jq '.[0].number' || echo "")
+
+              if [[ -n "$existing_pr_number" ]]; then
+                echo "⚠️ Existing PR #$existing_pr_number found for $branch. Closing it..."
+                gh pr close "$existing_pr_number" --delete-branch --yes
+              fi
               git commit -m "chore: bump $module_name module to $latest_tag"
               git push -f origin "$branch"
 
