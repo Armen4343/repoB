@@ -70,6 +70,7 @@ jobs:
                 if [[ "$current_tag" != "$latest_tag" ]]; then
                   echo "📦 Updating $file from $current_tag to $latest_tag"
                   sed -i "s|ref=$current_tag|ref=$latest_tag|g" "$file"
+                  git add "$file"
                   changed=true
                 fi
               fi
