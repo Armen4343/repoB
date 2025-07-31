@@ -56,6 +56,9 @@ jobs:
 
             echo "🆕 Latest tag: $latest_tag"
 
+            git checkout main
+            git pull origin main
+
             # Create and switch to update branch
             branch="update/${module_name}-module"
             git checkout -b "$branch"
